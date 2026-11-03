@@ -1,0 +1,81 @@
+models:
+  Store:
+    name: string:100
+    address: string
+    city: string:100
+    relationships:
+      hasMany: Inventory, Order, Complaint
+
+  Role:
+    name: string:50 unique
+
+  Category:
+    name: string:100 unique
+    relationships:
+      hasMany: Product
+
+  Product:
+    category_id: id foreign
+    name: string:100
+    barcode: string:20 unique
+    selling_price: decimal:8,2
+    cost_price: decimal:8,2
+    relationships:
+      hasMany: Inventory, OrderLine
+
+  Inventory:
+    store_id: id foreign
+    product_id: id foreign
+    quantity: unsignedInteger default:0
+    minimum_stock: unsignedInteger default:10
+
+  Customer:
+    name: string:100
+    address: string
+    email: string unique
+    contact_person: string:100
+    password: string
+    relationships:
+      hasMany: Order
+
+  Order:
+    customer_id: id foreign
+    store_id: id foreign
+    ordered_at: datetime
+    status: string:30 default:new
+    relationships:
+      hasMany: OrderLine
+
+  OrderLine:
+    order_id: id foreign
+    product_id: id foreign
+    quantity: unsignedInteger
+    price: decimal:8,2
+
+  Complaint:
+    store_id: id foreign
+    description: text
+    phone: string:20
+    name: string:100 nullable
+    status: string:30 default:new
+    received_at: datetime
+    handled_by: id foreign:users nullable
+    note: text nullable
+    relationships:
+      hasOne: ComplaintForward
+
+  ComplaintForward:
+    complaint_id: id foreign unique
+    forwarded_to: id foreign:users
+    forwarded_at: datetime
+
+  Alert:
+    user_id: id foreign
+    type: string:50
+    message: string
+    is_read: boolean default:false
+
+seeders: Store, Role, Category, Product, Customer, Inventory, Order, OrderLine, Complaint
+
+controllers:
+  # ...
